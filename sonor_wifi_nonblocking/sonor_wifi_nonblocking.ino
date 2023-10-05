@@ -20,13 +20,20 @@
 #include <esp_log.h>
 #include <esp_wifi.h>
 
-const char* ssid = "Hub";
+//const char* ssid = "Hub";
+const char* ssid     = "gaia";
+//const char* mqtt_server = "192.168.86.36";//"192.168.0.106";
+const char* mqtt_server = "192.168.7.1";
+
 const char* identifier = "ROW1";
 const char* password = "848D533724";
-//const char* ssid     = "gaia";
-const char* mqtt_server = "192.168.86.36";//"192.168.0.106";
-//const char* mqtt_server = "192.168.7.1";
+
 byte mac[] = { 0xE0, 0x5A, 0x1B, 0xA7, 0x15, 0x34 };
+
+const int detection = 400;
+
+const int sensorStart = 8;
+const int sensors = 8;
 
 
 ///
@@ -76,10 +83,6 @@ float distanceCm5;
 float distanceCm6;
 float distanceCm7;
 
-const int detection = 100;
-
-const int sensorStart = 0;
-const int sensors = 8;
 
 int durations[sensors];
 int distancesCm[sensors];
@@ -90,28 +93,6 @@ int lastReconnectAttempt = 0;
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
-
-void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  Serial.print(". Message: ");
-  String messageTemp;
-
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
-  }
-  Serial.println();
-}
-
-boolean reconnect() {
-  if (mqttClient.connect(identifier)) {
-    mqttClient.subscribe("server");
-  }
-  return mqttClient.connected();
-}
-
 
 void setup() {
   Serial.begin(115200);
@@ -159,11 +140,28 @@ void loop() {
     mqttClient.loop();
   }
   loop_sensor();
- // for (int i = 0; i < sensors; i++) {
- //   if (distancesCm[i] < detection && distancesCm[i] > 0) {
- //     sendMessage(i, distancesCm[i]);
- //   }
- // }
+}
+
+
+void callback(char* topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  Serial.print(". Message: ");
+  String messageTemp;
+
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+}
+
+boolean reconnect() {
+  if (mqttClient.connect(identifier)) {
+    mqttClient.subscribe("server");
+  }
+  return mqttClient.connected();
 }
 
 void sendMessage(int sensor, int distanceCm){
@@ -209,7 +207,7 @@ void loop_sensor() {
   // Prints the distance on the Serial Monitor
   Serial.print("Distance (cm): 0: ");
   for (int i = 0; i < sensors; i++) {
-    Serial.print(i);
+    Serial.print(sensorStart + i);
     Serial.print("-");
     Serial.print(distancesCm[i]);
     Serial.print(" : ");

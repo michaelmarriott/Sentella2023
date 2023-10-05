@@ -46,6 +46,7 @@ int loopPatternUntilChange = 1000;
 int beginDelay = 500;
 int sensorSpeed = 5;
 
+bool debug = true;
 // source buffer for original value
 struct CRGB colors[WIDTH][HEIGHT][DEPTH];
 // time the pixel is activated
@@ -53,7 +54,7 @@ float timed[WIDTH][HEIGHT][DEPTH];
 
 void setup() {
   Serial.begin(9600);
- // Serial.println("setup");
+  //println("setup");
   FastLED.addLeds<OCTOWS2811, GRB>(leds, HEIGHT * DEPTH);
   FastLED.setBrightness(brightness);
 
@@ -110,10 +111,10 @@ void loop() {
 
    
     
-     Serial.print("loopCounter");
-      Serial.print(loopCounter);
-   Serial.print(":pattern");
-   Serial.println(pattern);
+    print("loopCounter");
+    print(loopCounter);
+    print(":pattern");
+    println(pattern);
     //starfield(loopCounter, 1);
    // calibrate();
     //calibrate_connective();
@@ -170,12 +171,12 @@ void twinkleSequence(int dt, int blur) {
             float t = timed[x][y][z] / fade_in_speed;
             CRGB colored = colors[x][y][z];
             if (x == 2 && y == 0 && z == 0) {
-              Serial.print("FadeIn");
-              Serial.print(timed[x][y][z]);
-              Serial.print("-");
-              Serial.print(t);
-              Serial.print("-");
-              Serial.println(getLedValue(colored));
+              print("FadeIn");
+              print(timed[x][y][z]);
+              print("-");
+              print(t);
+              print("-");
+              println(getLedValue(colored));
             }
             voxel(x, y, z, colored.nscale8(bright * t));  // .nscale8(bright *(1- t))  // .scaled(bright * t));
             timed[x][y][z] += dt;
@@ -187,16 +188,16 @@ void twinkleSequence(int dt, int blur) {
             voxel(x, y, z, colored.nscale8(bright * (1 - t)));  // .scaled(bright * (1 - t)));
 
             if (x == 2 && y == 0 && z == 0) {
-              Serial.print("FadeOut");
-              Serial.print(timed[x][y][z]);
-              Serial.print("-");
-              Serial.println(t);
+              print("FadeOut");
+              print(timed[x][y][z]);
+              print("-");
+              println(t);
             }
             timed[x][y][z] += dt;
             pixels_active++;
           } else {
             if (x == 2 && y == 0 && z == 0) {
-              Serial.println("Make Black ");
+              println("Make Black ");
             }
 
             timed[x][y][z] = 0;
@@ -217,7 +218,7 @@ void twinkleSequence(int dt, int blur) {
     uint8_t x = random(0, WIDTH);
     uint8_t y = random(0, HEIGHT);
     uint8_t z = random(0, DEPTH);
-    // Serial.println(timed[x][y][z]);
+    // println(timed[x][y][z]);
     if (timed[x][y][z] == 0) {
       //printLed(single_color);
       colors[x][y][z] = CRGB(random(60,250), random(10,70), random(60,255));
@@ -229,20 +230,20 @@ void twinkleSequence(int dt, int blur) {
       int sensor_number = (x * SENSOR_PER_ROW) + y;
       if (sensors[sensor_number] > 0) {
         int sensor_value = sensors[sensor_number];
-        Serial.print("sensor");
-        Serial.print(sensor_number);
+        print("sensor");
+        print(sensor_number);
 
         for (int xs = 0; xs <= 1; xs++) {
           for (int ys = 0; ys <= 1; ys++) {
             Point point = getXYForSensor(sensor_number, xs, ys);
             for (uint8_t i = 0; i < twinkle_sensor; i++) {
               uint8_t z = random(0, DEPTH);
-              Serial.print("point");
-              Serial.print(point.X);
-              Serial.print("-");
-              Serial.print(point.Y);
-              Serial.print("-");
-              Serial.print(z);
+              print("point");
+              print(point.X);
+              print("-");
+              print(point.Y);
+              print("-");
+              print(z);
 
               int pixel = gitPixelNumber(point.X, point.Y, z);
               if (timed[point.X][point.Y][z] == 0) {
@@ -382,7 +383,7 @@ void starfieldSequence(int dt) {
       } else if (stars[i].z < -1) {
         stars[i] = Vector3(random(1, WIDTH), random(0, HEIGHT), random(0,DEPTH));
       }
-      Serial.println(stars[i].x);
+      println(stars[i].x);
       CRGB c = ColorFromPalette(RainbowColors_p,(hue16 >> 8) + (int8_t)(r * 6));// //CRGB((hue16 >> 8) + (int8_t)(r * 6), RainbowColors_p);
       // Multiply by sqrt(3) * radius = 12.99 => 13
       voxelv(stars[i]); //, c.nscale8(brightness)
@@ -501,19 +502,19 @@ void wipeoutSequence(int loopCounter, int keepSpace, int blur) {
 
 //////////////
 void voxel(int x, int y, int z, CRGB color) {
-  //  Serial.print("voxel");
+  //  print("voxel");
   // printLed(color);
   temp_leds[(x * HEIGHT * DEPTH) + (y * DEPTH) + z] = color;
 }
 
 void voxelv(Vector3 v) {
- // Serial.print("v.x");
- // Serial.print(v.x);
+ // print("v.x");
+ // print(v.x);
   int x = v.x;
    int y = v.y;
     int z = v.z;
     if(x != 0 && y != 0 && z != 0){
-     // Serial.println(v.x);
+     // println(v.x);
     }
   // printLed(v.x );
  temp_leds[(x * HEIGHT * DEPTH) + (y * DEPTH) + z] = CRGB::Blue; // color;
@@ -524,10 +525,10 @@ int gitPixelNumber(int x, int y, int z) {
 }
 
 void printXYZ(int x, int y, int z) {
-  Serial.print(x);
-  Serial.print(y);
-  Serial.print(z);
-  Serial.println("");
+  print(x);
+  print(y);
+  print(z);
+  println("");
 }
 
 void printLedValues() {
@@ -537,14 +538,14 @@ void printLedValues() {
       for (uint8_t z = 0; z < DEPTH; z++) {
 
         if (x == 2 && y == 0 && z == 0) {
-         // Serial.print("i=");
-         // Serial.print(getLedValue(leds[(x * HEIGHT * DEPTH) + (y * DEPTH) + z]));
-         // Serial.print(":");
+         // print("i=");
+         // print(getLedValue(leds[(x * HEIGHT * DEPTH) + (y * DEPTH) + z]));
+         // print(":");
         }
       }
     }
   }
-  //Serial.println("");
+  //println("");
 }
 
 int getLedValue(CRGB led) {
@@ -554,7 +555,7 @@ int getLedValue(CRGB led) {
 
 void printLed(CRGB led) {
   int v = getLedValue(led);
-  // Serial.println(v);
+  // println(v);
 }
 
 
@@ -573,7 +574,7 @@ void voxelDisplay(int blur) {
 }
 
 void voxelBlendDisplay(int blur) {
-    Serial.println("voxelBlendDisplay");
+    println("voxelBlendDisplay");
   for (int i = 0; i < NUM_LEDS; i++) {
    // if (getLedValue(temp_leds[i]) > 0) {
    // }
@@ -582,7 +583,7 @@ void voxelBlendDisplay(int blur) {
   blendSensor();
   blur1d(leds, NUM_LEDS, blur);
   //printLedValues();
-  // Serial.println("voxelBlendDisplay");
+  // println("voxelBlendDisplay");
   FastLED.show();
 }
 
@@ -600,19 +601,19 @@ void rundownSensor(int dt){
 
 
 void blendSensor() {
-   Serial.println("blendSensor");
+   println("blendSensor");
   for (int x = 0; x < SENSOR_ROWS; x++) {
     for (int y = 0; y < SENSOR_PER_ROW; y++) {
       int sensor_number = (x * SENSOR_PER_ROW) + y;
       if (sensors[sensor_number] > 0) {
         int sensor_value = sensors[sensor_number];
-        // Serial.print("sensor_value");
-           // Serial.println(sensor_value);
+        // print("sensor_value");
+           // println(sensor_value);
         for (int x = 0; x <= 1; x++) {
           for (int y = 0; y <= 1; y++) {
             int p = getFirstPixelForSensor(sensor_number, x, y);
-            // Serial.print("p");
-            //Serial.println(p);
+            // print("p");
+            //println(p);
             for (int z = 0; z <= DEPTH; z++) {
               
               leds[p+z] = blend(temp_leds[p+z], CRGB::White, sensor_value);
@@ -633,15 +634,31 @@ void blendSensor() {
 // 10  11  12  13  14
 //   08  09  10  11
 // 15  16  17  18  19
+// int row = (sensor / SENSOR_PER_ROW);
+// int strip = (row + x + sensor) + (y * (SENSOR_PER_ROW + 1));
+
+
+//
+// 00  01  02  03  04
+//   00  04  08  12
+// 05  06  07  08  09
+//   01  05  09  13
+// 10  11  12  13  14
+//   02  06  10  14
+// 15  16  17  18  19
+//   03  07  11  15
+// 20  21  22  23  24
 int getFirstPixelForSensor(int sensor, int x, int y) {
   return getStripForSensor(sensor, x, y) * DEPTH;
 }
 
 int getStripForSensor(int sensor, int x, int y) {
-  int row = (sensor / SENSOR_PER_ROW);
-  int strip = (row + x + sensor) + (y * (SENSOR_PER_ROW + 1));
-  // Serial.print("strip");
-   // Serial.println(strip);
+  int row = (sensor % SENSOR_PER_ROW);
+  int col = (sensor / SENSOR_PER_ROW);
+  int strip = ((row * (SENSOR_PER_ROW + 1)) + col +x) + (y * (SENSOR_PER_ROW + 1);
+  //+ x + sensor) + (y * (SENSOR_PER_ROW + 1));
+  print("strip");
+  println(strip);
   return strip;
 }
 
@@ -658,21 +675,21 @@ void serialRead() {
   int startChar = Serial.read();
 
   if (startChar == '{') {
-   // Serial.println("SerialRead");
+   // println("SerialRead");
     String json = "{" + Serial.readStringUntil("}") + "}";
-    //Serial.println(json);
+    //println(json);
     DynamicJsonDocument doc(1024);
     deserializeJson(doc, json);
-   // Serial.print("here1");
+   // print("here1");
     //   JsonArray arr = doc.as<JsonArray>();
-   // Serial.print("here3");
-    //Serial.println(arr.size());
+   // print("here3");
+    //println(arr.size());
     // for (int i = 0; i < arr.size(); i++) {
 
     int sensor = doc["sensor"];
     String distance = doc["distance"];
-    Serial.print("Sensor");
-    Serial.println(sensor);
+    print("Sensor");
+    println(sensor);
     sensors[sensor] = 255;
     // }
   } else if (startChar == '%') {
@@ -680,30 +697,30 @@ void serialRead() {
     //  String result = Serial.readStringUntil('\n');
   } else if (startChar == '?') {
     // Check to see if TEENSY
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
+    print(0);
     Serial.write(',');
-    Serial.print(0);
-    Serial.println();
+    print(0);
+    println();
     isStarted = true;
     brightness = 150;
   } else if (startChar >= 0) {
@@ -763,6 +780,18 @@ void calibrate_connective() {
       }
   }
   FastLED.show();
+}
+
+void print(String s){
+  if(debug){
+    Serial.print(s);
+  }
+}
+
+void println(String s){
+  if(debug){
+    Serial.println(s);
+  }
 }
 
 
